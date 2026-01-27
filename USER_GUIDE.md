@@ -32,8 +32,19 @@ From this menu you can:
 *   **Reset**: Hard reset the emulated machine.
 *   **Shutdown**: Safely power off the Raspberry Pi.
 
-### Important 86Box Shortcuts
-*   **Ctrl + Alt + End** (or Middle Mouse Click): Release mouse capture (giving control back to the host cursor, though invisible).
+### Important 86Box Controls
+- **F8 + F12**: Open the **Appliance Menu** (Pause, Settings, Reset, Shutdown).
+- **Ctrl + End**: Release mouse capture (Native 86Box behavior).
+- **Ctrl + Alt + S**: Open Settings (Must be mapped in 86Box settings!).
+
+> [!TIP]
+> **Enable the Settings Menu Button**:
+> By default, 86Box v5.0 does not have a hotkey for "Open Settings".
+> 1. Press **Ctrl+End** to release the mouse.
+> 2. Access the menu bar (if visible) or Manager.
+> 3. Go to **Settings > Input > Key bindings**.
+> 4. Map **"Open Settings"** to `Ctrl + Alt + S`.
+> Now the "Settings" button in your F8+F12 menu will work!
 *   **Ctrl + Alt + P** (Default): Pause emulation.
 
 ## 4. Transferring Files (Games/OS)

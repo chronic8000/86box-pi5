@@ -5,6 +5,10 @@ xset s off      # Disable screensaver
 xset -dpms      # Disable power management
 xset s noblank  # Disable screen blanking
 
+# Performance Tuning (Pi 5 / SDL)
+export SDL_VIDEODRIVER=x11
+export SDL_HINT_RENDER_VSYNC=0
+
 # 2. Start the Window Manager
 # We use openbox for minimal overhead.
 openbox-session &

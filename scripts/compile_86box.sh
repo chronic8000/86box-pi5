@@ -27,6 +27,10 @@ docker run --rm -v "$BUILD_DIR":/output 86box-cross-builder /bin/bash -c '
     echo "Checking for sndfile.pc in $PKG_CONFIG_PATH..."
     ls -l /usr/lib/aarch64-linux-gnu/pkgconfig/sndfile.pc || echo "sndfile.pc NOT FOUND"
 
+    # Optimize Dynarec Block Size (Pi 5 Cortex-A76 specific optimization)
+    echo "Patching MAX_BLOCK_INSNS..."
+    grep -rl "#define MAX_BLOCK_INSNS" src/ | xargs sed -i "s/#define MAX_BLOCK_INSNS 32/#define MAX_BLOCK_INSNS 64/g" || echo "WARNING: MAX_BLOCK_INSNS not found or already patched"
+
     cmake -B build -S . \
         -DNEW_DYNAREC=ON \
         -DCMAKE_BUILD_TYPE=Release \
@@ -35,8 +39,8 @@ docker run --rm -v "$BUILD_DIR":/output 86box-cross-builder /bin/bash -c '
         -DCMAKE_CXX_COMPILER=aarch64-linux-gnu-g++ \
         -DQt5_DIR=/usr/lib/aarch64-linux-gnu/cmake/Qt5 \
         -DVDE_NETWORKING=ON \
-        -DCMAKE_C_FLAGS="-mcpu=cortex-a76 -mtune=cortex-a76" \
-        -DCMAKE_CXX_FLAGS="-mcpu=cortex-a76 -mtune=cortex-a76"
+        -DCMAKE_C_FLAGS="-mcpu=cortex-a76 -mtune=cortex-a76 -O3 -fomit-frame-pointer -fno-plt" \
+        -DCMAKE_CXX_FLAGS="-mcpu=cortex-a76 -mtune=cortex-a76 -O3 -fomit-frame-pointer -fno-plt"
         
     echo "Building..."
     # -j$(nproc) uses all cores
