@@ -32,6 +32,45 @@ From this menu you can:
 *   **Reset**: Hard reset the emulated machine.
 *   **Shutdown**: Safely power off the Raspberry Pi.
 
+## 📦 Packaging for Distribution (New)
+
+Once you have configured your Windows 98 guest (drivers, background, software) and verified everything works, follow these steps to create a distributable image for other users:
+
+### Option A: The Professional Way (.deb Package)
+This is the cleanest way to share the **emulator itself**. It doesn't include your personal Windows files, but it makes the Pi ready to run them.
+
+1.  **Build the package** on your Pi:
+    ```bash
+    cd ~/86box_install
+    ./build_deb.sh
+    ```
+2.  **Distribute**: Share the resulting `86box-pi5_1.0.0_arm64.deb` file.
+3.  **To Install**: Anyone can install it by running:
+    ```bash
+    sudo apt install ./86box-pi5_1.0.0_arm64.deb
+    ```
+
+### Option B: The "Golden Master" SD Image (Best for a complete OS)
+This creates a `.img` file that others can flash to their own SD cards to get an identical copy of YOUR whole system.
+
+1.  **Shutdown the Pi** cleanly from within Windows 98 and then power off.
+2.  **Remove the SD Card** and insert it into your PC.
+3.  **Create an Image**: 
+    - On Windows, use `Win32DiskImager` to "Read" the SD card into a file like `My86BoxAppliance.img`.
+4.  **Shrink the Image (Highly Recommended)**: 
+    - Large SD images contain mostly empty space. Use a tool like **`PiShrink`** (Linux/WSL) to compress it:
+      ```bash
+      wget https://raw.githubusercontent.com/Drewsif/PiShrink/master/pishrink.sh
+      chmod +x pishrink.sh
+      sudo ./pishrink.sh -s My86BoxAppliance.img
+      ```
+    - This will shrink the 32GB/64GB image down to just the size of the *actual* data (usually 2-4GB), making it easy to upload!
+
+### Option B: The Portable VM Bundle
+If you only want to share your Windows 98 setup but keep the 86Box install separate:
+1. Zip up your `/home/chronic/.local/share/86box-app/Virtual Machines/` directory.
+2. Share that zip file. Others can drop it into the same path on their established 86Box-Pi install.
+
 ### Important 86Box Controls
 - **F8 + F12**: Open the **Appliance Menu** (Pause, Settings, Reset, Shutdown).
 - **Ctrl + End**: Release mouse capture (Native 86Box behavior).
