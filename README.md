@@ -1,48 +1,77 @@
-# 86Box Raspberry Pi 5 Appliance Builder
+# 86Box-Pi 5: Optimized x86 Emulation Appliance
 
-This directory contains a complete toolchain to generate a custom Raspberry Pi OS image that boots directly into 86Box.
+[![Platform](https://img.shields.io/badge/Platform-Raspberry%20Pi%205-red)](https://www.raspberrypi.com/products/raspberry-pi-5/)
+[![License](https://img.shields.io/badge/License-GPL%20v3-blue)](https://github.com/86Box/86Box/blob/master/COPYING)
 
-## Download Pre-built Image
-Don't want to build it yourself? Download the latest pre-compiled image for Raspberry Pi 5 here:
-[Download 86Box Pi Appliance (Google Drive)](https://drive.google.com/file/d/1zFrmpkwZU72tUEtExmdRbPSTmDMlamTn/view?usp=sharing)
+86Box-Pi 5 is a specialized distribution of the [86Box](https://86box.net) emulator, meticulously tuned for the **Raspberry Pi 5**. This project transforms your SBC into a dedicated "Retro PC Appliance," capable of running Windows 9x and early Pentium-era software with cycle-accurate timing and native Wayland support.
 
-## Prerequisites
-- Windows 10/11 with WSL 2.0 (Ubuntu or Debian).
-- At least 15GB of free disk space (for Docker images and uncompressed filesystem).
+## 🚀 Why This Project?
 
-## Quick Start (WSL)
+Unlike generic emulators, this project addresses the specific challenges of running 86Box on ARM64 Wayland hosts:
+*   **Performance**: Uses the optimized New Dynarec (NDR) for Cortex-A76.
+*   **Mouse Capture Fix**: Native Wayland implementation for perfect mouse locking (no more cursor escaping!).
+*   **Appliance Logic**: Integrated hotkey menu (F8+F12) for managing settings, disks, and power without leaving the emulated environment.
+*   **Auto-Deployment**: Scripted installers that handle dependencies, groups, and ROMs automatically.
 
-1. **Setup Environment**:
-   Run the setup script to install QEMU and Docker.
+---
+
+## 🛠 Choose Your Installation Path
+
+### 1. The Professional Way (Native `.deb` Package)
+**Best for most users.** Install 86Box as a standard application on Raspberry Pi OS.
+1. Download the latest `.deb` from the [Releases](https://github.com/chronic8000/86box-pi5/releases) page.
+2. Install it via terminal:
    ```bash
-   chmod +x setup_wsl.sh
-   ./setup_wsl.sh
-   # NOTE: If docker was installed, you might need to close and reopen your terminal.
+   sudo apt install ./86box-pi5_1.0.0_arm64.deb
    ```
+3. Launch "86Box" from the **Applications -> Games** menu.
 
-2. **Build the Image**:
-   Run the master build script. This will download the OS, compile 86Box, and inject it.
+### 2. The Developer Way (Remote Deployment)
+**Best for those working from a PC.** Push the 86Box environment to your Pi over the network.
+1. Clone this repo on your Windows/WSL machine.
+2. Run the deployment orchestrator:
    ```bash
-   chmod +x build.sh
+   ./deploy_to_pi.sh [PI_IP_ADDRESS]
+   ```
+   *This automatically installs dependencies, ROMs, and the native Wayland wrapper.*
+
+### 3. The "Golden Master" Way (Full Image Builder)
+**Best for building dedicated appliances.** Generate a custom `.img` file that boots directly into 86Box.
+1. Use WSL/Docker to run the automated build script:
+   ```bash
    sudo ./build.sh
    ```
-   *Warning: The build process involves `sudo` for mounting disk images. Review `scripts/modify_image.sh` if concerned.*
+2. Flash the resulting `86box-pi5-appliance.img` to an SD card.
 
-3. **Flash**:
-   Take the resulting `86box-pi5-appliance.img` and flash it to an SD card using **Raspberry Pi Imager** or **BalenaEtcher**.
+---
 
-## What's Inside?
+## 🖱️ The Wayland Mouse Fix
 
-### The "Payload" (Injected into the Pi)
-- **86Box v5.0+**: compiled with Cortex-A76 optimizations (New Dynarec).
-- **Silent Boot**: Kernel parameters tuned to hide text.
-- **Auto-Start**: Systemd unit (`retro-pc.service`) launching X11/Openbox.
-- **F8+F12 Menu**: A Python daemon (`input_daemon.py`) that executes `yad` for a settings GUI.
+Raspberry Pi OS (Bookworm) uses the Wayland compositor, which standard emulators struggle with. We've solved this by implementing a **Hybrid Wrapper**:
+*   **Stable UI**: Uses X11 compatibility for the manager window to prevent hangs.
+*   **Native Input**: Uses SDL's Relative Pointer protocol to "grab" the mouse hardware, ensuring your Windows 98 cursor is perfectly synced.
 
-### Key Files
-- `usr/local/bin/86Box`: The emulator.
-- `usr/local/bin/input_daemon.py`: The hotkey listener.
-- `home/pi/.xinitrc`: The startup script.
+---
 
-## Customization
-To add more ROMs or change default settings before building, edit the `scripts/compile_86box.sh` script or place files in the `payload/` directory and update `scripts/modify_image.sh` to copy them.
+## ⌨️ Controls & Usage
+
+*   **F8 + F12**: Opens the **Appliance Control Menu** (Settings, Reset, Media, Shutdown).
+*   **Ctrl + End**: Release mouse capture.
+*   **VMware Mouse**: For the smoothest experience (especially over VNC), we recommend setting the emulated mouse to **VMware Mouse (vmmouse)** in 86Box settings.
+
+---
+
+## 📂 Project Structure
+
+*   **/scripts**: Toolchains for cross-compilation and `.deb` packaging.
+*   **/payload**: Scripts for the Appliance UI and background monitoring.
+*   **/86box-image-builder**: The core logic for generating standalone OS images.
+
+---
+
+## ❤️ Credits
+*   The [86Box Team](https://github.com/86Box/86Box) for the incredible emulator.
+*   [Labwc](https://github.com/labwc/labwc) for the lightweight Wayland compositor.
+
+---
+*For detailed configuration help, see the [USER_GUIDE.md](USER_GUIDE.md).*
